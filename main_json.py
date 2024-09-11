@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import websockets
 import json
 
@@ -48,10 +49,26 @@ async def server(websocket, path):
 
             elif data["action"] == "simulation_result":
                 del data["action"]
-                # Um novo arquivo foi enviado pela aplicação
-                print(f"Novo resultado de simulacao: {data}")
 
-                # Notifica o servidor
+                # # Processa arquivos recebidos em base64
+                # if "result_data" in data:
+                #     result_data = data["result_data"]
+                #     gif_content = base64.b64decode(result_data["gif"])
+                #     jpg_content = base64.b64decode(result_data["jpg"])
+
+                #     with open(
+                #         f'{data["simulation_name"]}_result.gif', "wb"
+                #     ) as gif_file:
+                #         gif_file.write(gif_content)
+
+                #     with open(
+                #         f'{data["simulation_name"]}_result.jpg', "wb"
+                #     ) as jpg_file:
+                #         jpg_file.write(jpg_content)
+
+                print(f"Novo resultado de simulação: {data}")
+
+                # Notifica o servidor com os resultados
                 await notify_server_machine(data)
 
     finally:

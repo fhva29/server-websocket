@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import websockets
 import json
 import time
@@ -25,18 +26,24 @@ async def rodar_simulacao(data, websocket):
     """
     # Aqui você pode colocar a lógica de rodar a simulação com o arquivo
     print(f"Simulação iniciada com {data}")
-    with open(f'simulacao_{data["simulation_name"]}.json', "w") as json_file:
+
+    # AQUI VAI SER A PARTE DE SUBSTITUIR AS VARIAVEIS NO ARQUIVO
+    with open(f'{data["simulation_name"]}.json', "w") as json_file:
         json.dump(data, json_file, indent=4)
-    time.sleep(
-        10
-    )  # Simulação placeholder (use asyncio.sleep() para operações não-bloqueantes)
+
+    time.sleep(10)
+    # Ler os arquivos (simulados) e enviar como base64
+    with open(f'{data["simulation_name"]}.jpg', "rb") as jpg_file:
+        jpg_content = base64.b64encode(jpg_file.read()).decode("utf-8")
+
     print("Simulação concluída com sucesso")
+
     resultado_simulacao = {
         "action": "simulation_result",
         "simulation_name": data["simulation_name"],
         "status": "completed",
         "message": "Simulação concluída com sucesso",
-        "result_data": {"gif": "gif_file", "jpg": "jpg_file"},
+        "result_data": {"jpg": jpg_content},
     }
 
     await websocket.send(json.dumps(resultado_simulacao))
