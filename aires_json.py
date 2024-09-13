@@ -9,7 +9,7 @@ async def listen_to_server():
     """
     Escuta o servidor WebSocket e inicia a simulação quando um novo arquivo for recebido.
     """
-    uri = "ws://localhost:8765"
+    uri = "ws://172.208.19.71:8765"
     async with websockets.connect(uri) as websocket:
         while True:
             message = await websocket.recv()
