@@ -20,23 +20,17 @@ async def listen_to_server():
                 await rodar_simulacao(data, websocket)
 
 
-async def rodar_simulacao(data, websocket):
+async def executar_simulacao(data, websocket):
     """
-    Função para rodar a simulação com base no arquivo recebido.
+    Função que executa a simulação e envia o resultado após a conclusão.
     """
-    # Aqui você pode colocar a lógica de rodar a simulação com o arquivo
-    print(f"Simulação iniciada com {data}")
+    # Simulação placeholder (usar asyncio.sleep para operações não-bloqueantes)
+    print(f"Executando a simulação: {data}")
+    await asyncio.sleep(10)  # Simula o tempo de execução da simulação
 
-    # AQUI VAI SER A PARTE DE SUBSTITUIR AS VARIAVEIS NO ARQUIVO
-    with open(f'{data["simulation_name"]}.json', "w") as json_file:
-        json.dump(data, json_file, indent=4)
-
-    time.sleep(10)
     # Ler os arquivos (simulados) e enviar como base64
     with open(f'{data["simulation_name"]}.jpg', "rb") as jpg_file:
         jpg_content = base64.b64encode(jpg_file.read()).decode("utf-8")
-
-    print("Simulação concluída com sucesso")
 
     resultado_simulacao = {
         "action": "simulation_result",
@@ -46,7 +40,28 @@ async def rodar_simulacao(data, websocket):
         "result_data": {"jpg": jpg_content},
     }
 
+    # Enviar o resultado da simulação
     await websocket.send(json.dumps(resultado_simulacao))
+
+
+async def rodar_simulacao(data, websocket):
+    """
+    Função que apenas notifica que a simulação foi iniciada com sucesso
+    e chama a função que efetivamente roda a simulação.
+    """
+    print(f"Simulação {data['simulation_name']} iniciada com sucesso")
+
+    # Envia uma mensagem de início para o servidor
+    mensagem_inicial = {
+        "action": "simulation_started",
+        "simulation_name": data["simulation_name"],
+        "status": "started",
+        "message": f"Simulação {data['simulation_name']} iniciada com sucesso",
+    }
+    await websocket.send(json.dumps(mensagem_inicial))
+
+    # Chama a função que executa a simulação de fato
+    await executar_simulacao(data, websocket)
 
 
 # Exemplo de uso
